@@ -260,20 +260,6 @@ impl Handle<[u8; IPV4_LEN]> for Ipv4 {
     }
 }
 
-impl Clone for Ipv6 {
-    fn clone(&self) -> Self {
-        Self { octets: self.octets.clone() }
-    }
-}
-
-impl Handle<[u8; IPV6_LEN]> for Ipv6 {
-    fn from(octets: [u8; IPV6_LEN]) -> Self {
-        Self { octets }
-    }
-    fn to(&self) -> [u8; IPV6_LEN] {
-        self.octets.clone()
-    }
-}
 
 impl std::fmt::Display for Ipv4 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -299,6 +285,46 @@ impl Handle<u32> for Ipv4 {
             + ((self.octets[1] as u32) << 16)
             + ((self.octets[2] as u32) << 8)
             + ((self.octets[3] as u32) << 0)
+    }
+}
+
+impl Clone for Ipv6 {
+    fn clone(&self) -> Self {
+        Self { octets: self.octets.clone() }
+    }
+}
+
+impl Handle<[u8; IPV6_LEN]> for Ipv6 {
+    fn from(octets: [u8; IPV6_LEN]) -> Self {
+        Self { octets }
+    }
+    fn to(&self) -> [u8; IPV6_LEN] {
+        self.octets.clone()
+    }
+}
+
+impl std::fmt::Display for Ipv6 {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{:x}{:x}:{:x}{:x}:{:x}{:x}:{:x}{:x}:{:x}{:x}:{:x}{:x}:{:x}{:x}:{:x}{:x}",
+            self.octets[0],
+            self.octets[1],
+            self.octets[2],
+            self.octets[3],
+            self.octets[4],
+            self.octets[5],
+            self.octets[6],
+            self.octets[7],
+            self.octets[8],
+            self.octets[9],
+            self.octets[10],
+            self.octets[11],
+            self.octets[12],
+            self.octets[13],
+            self.octets[14],
+            self.octets[15]
+        )
     }
 }
 
