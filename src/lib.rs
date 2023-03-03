@@ -6,7 +6,8 @@ use std::time::{
 pub const ICMP_HEADER_SIZE: usize = std::mem::size_of::<IcmpHeader>();
 pub const ARP_HEADER_SIZE: usize = std::mem::size_of::<ArpHeader>();
 pub const ETH_HEADER_SIZE: usize = std::mem::size_of::<EthHeader>();
-pub const IP_HEADER_SIZE: usize = std::mem::size_of::<IpHeader>();
+pub const IP_HEADER_SIZE: usize = std::mem::size_of::<Ipv4Header>();
+pub const IPV6_LEN: usize = 16;
 pub const IPV4_LEN: usize = 4;
 pub const MAC_LEN: usize = 6;
 
@@ -44,6 +45,9 @@ pub trait Handle<T> {
     fn to(&self) -> T;
 }
 
+/// struct for representing prime numbers
+pub struct Prime;
+
 /// struct for representing ipv4 addresses
 ///
 /// # Example
@@ -56,11 +60,24 @@ pub trait Handle<T> {
 ///
 /// assert_eq!(ip_octets, [192, 168, 1, 1])
 /// ```
-
-pub struct Prime;
-
 pub struct Ipv4 {
-    ip_addr: [u8; IPV4_LEN],
+    octets: [u8; IPV4_LEN],
+}
+
+/// struct for representing ipv6 addresses
+///
+/// # Example
+/// ```
+/// use curuam::*;
+///
+/// let ip_addr: Ipv6 = Handle::from([0; IPV6_LEN]); // Bassicly IPV6_LEN is count of octets of ipv6 (16)
+///
+/// let ip_octets: [u8; IPV6_LEN] = ip_addr.to();
+///
+/// assert_eq!(ip_octets, [0; IPV6_LEN])
+/// ```
+pub struct Ipv6 {
+    octets: [u8; IPV6_LEN],
 }
 
 /// struct for representing mac addresses
@@ -127,9 +144,9 @@ pub struct EthHeader {
     pub proto: u16,
 }
 
-/// ip header
+/// ipv4 header
 #[repr(C)]
-pub struct IpHeader {
+pub struct Ipv4Header {
     pub verihl: u8,
     pub tos: u8,
     pub tot_len: u16,
@@ -140,6 +157,17 @@ pub struct IpHeader {
     pub check: u16,
     pub saddr: [u8; IPV4_LEN],
     pub daddr: [u8; IPV4_LEN],
+}
+
+/// ipv6 header 
+#[repr(C)]
+pub struct Ipv6Header {
+    pub verlab: u32,
+    pub payload: u16,
+    pub next: u8,
+    pub hop: u8,
+    pub src: [u8; IPV6_LEN],
+    pub dst: [u8; IPV6_LEN]
 }
 
 impl Prime {
@@ -218,17 +246,32 @@ impl std::fmt::Display for Mac {
 impl Clone for Ipv4 {
     fn clone(&self) -> Self {
         Self {
-            ip_addr: self.ip_addr.clone(),
+            octets: self.octets.clone(),
         }
     }
 }
 
 impl Handle<[u8; IPV4_LEN]> for Ipv4 {
     fn from(ip_addr: [u8; IPV4_LEN]) -> Self {
-        Self { ip_addr }
+        Self { octets: ip_addr }
     }
     fn to(&self) -> [u8; IPV4_LEN] {
-        self.ip_addr.clone()
+        self.octets.clone()
+    }
+}
+
+impl Clone for Ipv6 {
+    fn clone(&self) -> Self {
+        Self { octets: self.octets.clone() }
+    }
+}
+
+impl Handle<[u8; IPV6_LEN]> for Ipv6 {
+    fn from(octets: [u8; IPV6_LEN]) -> Self {
+        Self { octets }
+    }
+    fn to(&self) -> [u8; IPV6_LEN] {
+        self.octets.clone()
     }
 }
 
@@ -237,7 +280,7 @@ impl std::fmt::Display for Ipv4 {
         write!(
             f,
             "{}.{}.{}.{}",
-            self.ip_addr[0], self.ip_addr[1], self.ip_addr[2], self.ip_addr[3],
+            self.octets[0], self.octets[1], self.octets[2], self.octets[3],
         )
     }
 }
@@ -252,10 +295,10 @@ impl Handle<u32> for Ipv4 {
         Handle::from([o4, o3, o2, o1])
     }
     fn to(&self) -> u32 {
-        ((self.ip_addr[0] as u32) << 24)
-            + ((self.ip_addr[1] as u32) << 16)
-            + ((self.ip_addr[2] as u32) << 8)
-            + ((self.ip_addr[3] as u32) << 0)
+        ((self.octets[0] as u32) << 24)
+            + ((self.octets[1] as u32) << 16)
+            + ((self.octets[2] as u32) << 8)
+            + ((self.octets[3] as u32) << 0)
     }
 }
 

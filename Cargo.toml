@@ -1,10 +1,10 @@
 [package]
 name = "curuam"
-version = "0.2.0"
+version = "0.2.2"
 edition = "2021"
 license = "Apache-2.0"
 documentation = "https://docs.rs/curuam"
 repository = "https://github.com/CURVoid/curuam.git"
 homepage = "https://github.com/CURVoid/curuam.git"
 keywords = ["curuam", "random", "Mac", "Ip", "checksum"]
-description = "Crate for lot of useful functions and structs like Ipv4, Mac, random_in_range, memcpy, checksum, EthHeader, IpHeader, and etc."
+description = "Crate for lot of useful functions and structs like Ipv4, Ipv6, Mac, random_in_range, memcpy, checksum, EthHeader, IpHeader, and etc."
